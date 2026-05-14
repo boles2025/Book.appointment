@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجز موعد | عيادة د. يوحنا سمير</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent: #0ea5e9;
+            --surface: #ffffff;
+            --bg: #030712;
+            --text: #f9fafb;
+            --radius: 24px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.1) 0px, transparent 50%);
+        }
+
+        .booking-card {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .clinic-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        h2 { font-weight: 800; text-align: center; margin-bottom: 10px; }
+        p.subtitle { text-align: center; color: #9ca3af; margin-bottom: 30px; font-size: 14px; }
+
+        .form-label { font-weight: 800; color: #f8fafc; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .form-control {
+            background: rgba(15, 23, 42, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 14px;
+            color: #ffffff !important;
+            padding: 14px 20px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .form-control::placeholder { color: #94a3b8; opacity: 0.8; }
+        .form-control:focus {
+            background: #1e293b !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-booking {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-weight: 900;
+            padding: 16px;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 18px;
+            transition: var(--transition);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+        .btn-booking:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
+        }
+
+        .success-msg {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .success-icon {
+            font-size: 60px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; left: 20px; z-index: 9999; }
+        .toast-msg {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="booking-card" id="bookingCard">
+        <div class="clinic-logo" id="clinicLogoContainer" style="overflow: hidden; position: relative;">
+            <img id="clinicLogoImg" src="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%; position: absolute; top:0; left:0;">
+            <i class="fas fa-heartbeat" id="clinicLogoIcon"></i>
+        </div>
+        <h2 id="clinicNameDisplay">عيادة د. يوحنا سمير</h2>
+        <p class="subtitle" id="clinicSpecialtyDisplay">احجز موعدك الآن بسهولة وسيتم التواصل معك لتأكيده</p>
+        
+        <form id="bookingForm">
+            <div class="mb-3">
+                <label class="form-label">الاسم بالكامل</label>
+                <input type="text" class="form-control" id="pName" placeholder="الاسم ثلاثي" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">رقم الهاتف</label>
+                <input type="tel" class="form-control" id="pPhone" placeholder="01xxxxxxxxx" required inputmode="numeric" pattern="[0-9]{11}" title="يرجى إدخال 11 رقم باللغة الإنجليزية" oninput="this.value = this.value.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^0-9]/g, '').slice(0, 11);">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">تاريخ الحجز المطلوب</label>
+                <input type="date" class="form-control" id="pDate" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">نوع الكشف</label>
+                <select class="form-control" id="pType">
+                    <option value="كشف عادي">كشف عادي</option>
+                    <option value="كشف لياقة">كشف لياقة</option>
+                    <option value="كشف مستعجل">كشف مستعجل</option>
+                    <option value="متابعة">متابعة</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-booking" id="submitBtn">
+                <i class="fas fa-calendar-plus me-2"></i> تأكيد الحجز
+            </button>
+        </form>
+    </div>
+
+    <div class="booking-card success-msg" id="successMsg">
+        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h3 style="color: #10b981; font-weight: 900; margin-bottom: 20px;">تم استلام طلبك بنجاح!</h3>
+        <p style="color: #ffffff; font-size: 18px; line-height: 1.8; font-weight: 600;">شكراً لثقتك بنا. تم تسجيل موعدك بنجاح، سيقوم سكرتير العيادة بمراجعته وتأكيده معك هاتفياً .</p>
+        <button class="btn-booking" onclick="location.reload()">حجز موعد آخر</button>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDih36prcYiCRkir_wJ4WX5FEMUjUWDg-I",
+            authDomain: "dryouhana-8d84a.firebaseapp.com",
+            databaseURL: "https://dryouhana-8d84a-default-rtdb.firebaseio.com",
+            projectId: "dryouhana-8d84a",
+            storageBucket: "dryouhana-8d84a.firebasestorage.app",
+            messagingSenderId: "425938178195",
+            appId: "1:425938178195:web:455fc125d06fb27a293d66"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Fetch clinic settings
+        async function loadClinicSettings() {
+            try {
+                const snap = await get(ref(db, 'settings'));
+                if (snap.exists()) {
+                    const settings = snap.val();
+                    if (settings.clinicLogo) {
+                        document.getElementById('clinicLogoImg').src = settings.clinicLogo;
+                        document.getElementById('clinicLogoImg').style.display = 'block';
+                        document.getElementById('clinicLogoIcon').style.display = 'none';
+                        document.getElementById('clinicLogoContainer').style.background = 'transparent';
+                        document.getElementById('clinicLogoContainer').style.boxShadow = 'none';
+                    }
+                    if (settings.doctorName || settings.clinicName) {
+                        document.getElementById('clinicNameDisplay').textContent = settings.clinicName || settings.doctorName;
+                    }
+                    if (settings.specialty) {
+                        document.getElementById('clinicSpecialtyDisplay').innerHTML = `<span style="color:var(--accent);font-weight:700">${settings.specialty}</span><br><span style="font-size:12px;opacity:0.8;display:inline-block;margin-top:5px;">احجز موعدك الآن بسهولة وسيتم التواصل معك لتأكيده</span>`;
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading settings:", error);
+            }
+        }
+        loadClinicSettings();
+
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pDate').setAttribute('min', today);
+        document.getElementById('pDate').value = today;
+
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+            const name = document.getElementById('pName').value.trim();
+            const phone = document.getElementById('pPhone').value.trim();
+            const date = document.getElementById('pDate').value;
+            const type = document.getElementById('pType').value;
+
+            try {
+                // Save to Appointments node
+                const apptData = {
+                    patientName: name,
+                    phone: phone,
+                    date: date,
+                    time: 'لم يحدد',
+                    type: type,
+                    status: 'منتظر',
+                    notes: 'حجز أونلاين',
+                    isFollowUp: type === 'متابعة',
+                    createdAt: Date.now()
+                };
+
+                await push(ref(db, 'appointments'), apptData);
+
+                // Show success
+                document.getElementById('bookingCard').style.display = 'none';
+                document.getElementById('successMsg').style.display = 'block';
+
+            } catch (error) {
+                console.error(error);
+                showToast('عذراً، حدث خطأ أثناء الإرسال. حاول مرة أخرى.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-calendar-plus me-2"></i> تأكيد الحجز';
+            }
+        });
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.style.borderLeft = type === 'error' ? '4px solid #ef4444' : '4px solid #10b981';
+            toast.innerHTML = `<i class="fas ${type==='error'?'fa-times-circle':'fa-info-circle'}"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = '0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
